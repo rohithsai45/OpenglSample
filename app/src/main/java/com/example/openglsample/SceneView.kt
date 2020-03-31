@@ -9,6 +9,6 @@ class SceneView(context: Context) : GLSurfaceView(context) {
         // use opengl es 2.0
         setEGLContextClientVersion(2)
         setRenderer(SceneRenderer(context))
-        renderMode = RENDERMODE_WHEN_DIRTY
+//         renderMode = RENDERMODE_WHEN_DIRTY
     }
 }

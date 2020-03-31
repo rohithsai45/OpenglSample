@@ -8,6 +8,8 @@ import com.example.openglsample.shaderutil.ShaderProgram
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.nio.ShortBuffer
+import java.util.*
+
 
 open class Model(
     private val name: String,
@@ -15,9 +17,8 @@ open class Model(
     vertices: FloatArray,
     indices: ShortArray
 ) {
-    private val vertices: FloatArray = vertices.copyOfRange(0, vertices.size)
-    private val indices: ShortArray = indices.copyOfRange(0, indices.size)
-    
+    private val vertices: FloatArray = Arrays.copyOfRange(vertices, 0, vertices.size)
+    private val indices: ShortArray = Arrays.copyOfRange(indices, 0, indices.size)
     private var vertexBuffer: FloatBuffer? = null
     private var vertexBufferId = 0
     private var vertexStride = 0
@@ -25,33 +26,13 @@ open class Model(
     private var indexBufferId = 0
 
     // ModelView Transformation
-    private var position = Float3(0f, 0f, 0f)
-
-    // rotation in radians
-    private var rotationX = 0.0f
-    private var rotationY = 0.0f
-    private var rotationZ = 0.0f
-
-    private var scale = 1.0f
-    fun setPosition(position: Float3) {
-        this.position = position
-    }
-
-    fun setRotationX(rotationX: Float) {
-        this.rotationX = rotationX
-    }
-
-    fun setRotationY(rotationY: Float) {
-        this.rotationY = rotationY
-    }
-
-    fun setRotationZ(rotationZ: Float) {
-        this.rotationZ = rotationZ
-    }
-
-    fun setScale(scale: Float) {
-        this.scale = scale
-    }
+    var position = Float3(0f, 0f, 0f)
+    var rotationX = 0.0f
+    var rotationY = 0.0f
+    var rotationZ = 0.0f
+    var scale = 1.0f
+    var camera = Matrix4f()
+    var projection = Matrix4f()
 
     private fun setupVertexBuffer() {
         vertexBuffer = BufferUtils.newFloatBuffer(vertices.size)
@@ -88,7 +69,7 @@ open class Model(
         )
     }
 
-    private fun modelMatrix(): Matrix4f {
+    fun modelMatrix(): Matrix4f {
         val mat = Matrix4f() // make a new identitiy 4x4 matrix
         mat.translate(position.x, position.y, position.z)
         mat.rotate(rotationX, 1.0f, 0.0f, 0.0f)
@@ -98,9 +79,11 @@ open class Model(
         return mat
     }
 
-    fun draw() {
+    fun draw(dt: Long) {
         shader.begin()
-        shader.setUniformMatrix("u_ModelViewMatrix", modelMatrix())
+        camera.multiply(modelMatrix())
+        shader.setUniformMatrix("u_ProjectionMatrix", projection)
+        shader.setUniformMatrix("u_ModelViewMatrix", camera)
         shader.enableVertexAttribute("a_Position")
         shader.setVertexAttribute(
             "a_Position",
