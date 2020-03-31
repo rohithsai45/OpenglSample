@@ -26,9 +26,12 @@ open class Model(
 
     // ModelView Transformation
     private var position = Float3(0f, 0f, 0f)
+
+    // rotation in radians
     private var rotationX = 0.0f
     private var rotationY = 0.0f
     private var rotationZ = 0.0f
+
     private var scale = 1.0f
     fun setPosition(position: Float3) {
         this.position = position
@@ -107,15 +110,6 @@ open class Model(
             vertexStride,
             0
         )
-        shader.enableVertexAttribute("a_Color")
-        shader.setVertexAttribute(
-            "a_Color",
-            COLORS_PER_VERTEX,
-            GLES20.GL_FLOAT,
-            false,
-            vertexStride,
-            COORDS_PER_VERTEX * SIZE_OF_FLOAT
-        )
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBufferId)
         GLES20.glDrawElements(
@@ -125,7 +119,6 @@ open class Model(
             0
         ) // offset
         shader.disableVertexAttribute("a_Position")
-        shader.disableVertexAttribute("a_Color")
         shader.end()
     }
 
