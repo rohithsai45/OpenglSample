@@ -10,10 +10,10 @@ class Square(shader: ShaderProgram) :
     Model("square", shader, squareCoords, indices) {
     companion object {
         val squareCoords = floatArrayOf(
-            5.0f, -5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // top left
-            5.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  // bottom left
-            -5.0f, 5.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // bottom right
-            -5.0f, -5.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
+            0.3f, -0.3f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,  // top left
+            0.3f, 0.3f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  // bottom left
+            -0.3f, 0.3f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // bottom right
+            -0.3f, -0.3f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
         )
         val indices = shortArrayOf(
             0, 1, 2,
