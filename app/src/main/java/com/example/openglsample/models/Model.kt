@@ -33,6 +33,7 @@ open class Model(
     var scale = 1.0f
     var camera = Matrix4f()
     var projection = Matrix4f()
+    var textureName = 0
 
     private fun setupVertexBuffer() {
         vertexBuffer = BufferUtils.newFloatBuffer(vertices.size)
@@ -49,7 +50,7 @@ open class Model(
             GLES20.GL_STATIC_DRAW
         )
         vertexStride =
-            (COORDS_PER_VERTEX + COLORS_PER_VERTEX) * SIZE_OF_FLOAT // 4 bytes per vertex
+            (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) * SIZE_OF_FLOAT // 4 bytes per vertex
     }
 
     private fun setupIndexBuffer() {
@@ -81,6 +82,11 @@ open class Model(
 
     fun draw(dt: Long) {
         shader.begin()
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureName)
+        shader.setUniformi("u_Texture", 1)
+
         camera.multiply(modelMatrix())
         shader.setUniformMatrix("u_ProjectionMatrix", projection)
         shader.setUniformMatrix("u_ModelViewMatrix", camera)
@@ -93,6 +99,16 @@ open class Model(
             vertexStride,
             0
         )
+        shader.enableVertexAttribute("a_TexCoord")
+        shader.setVertexAttribute(
+            "a_TexCoord",
+            TEXCOORDS_PER_VERTEX,
+            GLES20.GL_FLOAT,
+            false,
+            vertexStride,
+            (COORDS_PER_VERTEX + COLORS_PER_VERTEX) * SIZE_OF_FLOAT
+        )
+
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBufferId)
         GLES20.glDrawElements(
@@ -102,11 +118,14 @@ open class Model(
             0
         ) // offset
         shader.disableVertexAttribute("a_Position")
+        shader.disableVertexAttribute("a_TexCoord")
+
         shader.end()
     }
 
     companion object {
         private const val COORDS_PER_VERTEX = 3
+        private const val TEXCOORDS_PER_VERTEX = 2
         private const val COLORS_PER_VERTEX = 4
         private const val SIZE_OF_FLOAT = 4
         private const val SIZE_OF_SHORT = 2

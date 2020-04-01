@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OpenglSample</string>
+    <string name="title_text">Daily Talks</string>
 </resources>
