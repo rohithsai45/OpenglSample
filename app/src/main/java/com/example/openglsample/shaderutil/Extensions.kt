@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.view.View
 
 
-fun View.toBitmap(): Bitmap? {
+fun View.toBitmap(): Bitmap {
     val view = this
     return if (view.height <= 0 || view.width <= 0) {
         view.measure(

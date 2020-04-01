@@ -29,13 +29,6 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
         )
         texture = Texture(shader)
         texture?.position = Float3(0.0f, 0.0f, 0.0f)
-        texture?.textureName = TextureUtils.loadTexture(
-            getTextBitmap(
-                R.layout.layout_channel_title_1,
-                R.id.channel_title,
-                context
-            )
-        )
         lastTimeMillis = System.currentTimeMillis()
     }
 
@@ -46,6 +39,7 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
             width,
             height
         ) // tried changing width and height values no effect of viewport here :(
+        texture?.setTargetDimensions(width, height)
         texture?.apply {
             //val perspective = Matrix4f()
             //perspective.loadPerspective(85.0f, width.toFloat() / height.toFloat(), 1.0f, -150.0f)
@@ -61,15 +55,15 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 1.0f, 1.0f, 1.0f)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         val currentTimeMillis = System.currentTimeMillis()
-        updateWithDelta(currentTimeMillis - lastTimeMillis)
+        updateWithDelta(gl10, currentTimeMillis - lastTimeMillis)
         lastTimeMillis = currentTimeMillis
     }
 
-    private fun updateWithDelta(dt: Long) {
+    private fun updateWithDelta(gl10: GL10?, dt: Long) {
         val xMovement =
-            0.1f * sin(System.currentTimeMillis() * 2 * Math.PI / (3.0f * 1000)).toFloat()
+            0.1f * sin(System.currentTimeMillis() * 2 * Math.PI / (2.0f * 1000)).toFloat()
         val yMovement =
-            -0.2f * sin(System.currentTimeMillis() * 2 * Math.PI / (2.0f * 1000)).toFloat()
+            -0.2f * sin(System.currentTimeMillis() * 2 * Math.PI / (3.0f * 1000)).toFloat()
 
         val viewMatrix = FloatArray(16)
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
@@ -80,7 +74,7 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
         camera.rotate(360.0f * xMovement, 0.0f, 0.0f, 1.0f)
         //camera.scale(movement, movement, movement)
         texture?.camera = camera
-        texture?.draw(dt)
+        texture?.draw(gl10, dt)
     }
 
 }
