@@ -118,10 +118,8 @@ open class Model(
     }
 
     private fun setupVertexBuffer() {
-        val xPoint = titleWidth * 1f/ targetHeight // yes its right
-        val yPoint = titleHeight * 1f/ targetHeight
 
-        updatePositionCoordinates(xPoint, yPoint)
+        updatePositionCoordinates()
 
         vertexBuffer = BufferUtils.newFloatBuffer(vertices.size)
         vertexBuffer?.put(vertices)
@@ -140,18 +138,20 @@ open class Model(
             (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) * SIZE_OF_FLOAT // 4 bytes per vertex
     }
 
-    private fun updatePositionCoordinates(xPoint: Float, yPoint: Float) {
-        vertices[0] = xPoint
-        vertices[1] = -yPoint
+    private fun updatePositionCoordinates() {
+        val xPoint = titleWidth * 1f/ targetHeight // yes its right
+        val yPoint = titleHeight * 1f/ targetHeight
+        vertices[0] = -xPoint
+        vertices[1] = yPoint
 
-        vertices[1 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX)] = xPoint
-        vertices[1 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) + 1] = yPoint
+        vertices[1 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX)] = -xPoint
+        vertices[1 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) + 1] = -yPoint
 
-        vertices[2 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX)] = -xPoint
-        vertices[2 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) + 1] = yPoint
+        vertices[2 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX)] = xPoint
+        vertices[2 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) + 1] = -yPoint
 
-        vertices[3 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX)] = -xPoint
-        vertices[3 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) + 1] = -yPoint
+        vertices[3 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX)] = xPoint
+        vertices[3 * (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) + 1] = yPoint
     }
 
     private fun setupIndexBuffer() {
