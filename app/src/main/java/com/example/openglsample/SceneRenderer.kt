@@ -10,8 +10,6 @@ import com.example.openglsample.models.Model
 import com.example.openglsample.models.Texture
 import com.example.openglsample.shaderutil.ShaderProgram
 import com.example.openglsample.shaderutil.ShaderUtils
-import com.example.openglsample.shaderutil.TextureUtils
-import com.example.openglsample.shaderutil.getTextBitmap
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.sin
@@ -19,7 +17,7 @@ import kotlin.math.sin
 class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private var texture: Model? = null
-    private var lastTimeMillis = 0L
+    private var initialTimeMillis = 0L
 
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -29,7 +27,7 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
         )
         texture = Texture(shader)
         texture?.position = Float3(0.0f, 0.0f, 0.0f)
-        lastTimeMillis = System.currentTimeMillis()
+        initialTimeMillis = System.currentTimeMillis()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -55,15 +53,13 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 1.0f, 1.0f, 1.0f)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         val currentTimeMillis = System.currentTimeMillis()
-        updateWithDelta(gl10, currentTimeMillis - lastTimeMillis)
-        lastTimeMillis = currentTimeMillis
+        updateWithDelta(gl10, currentTimeMillis - initialTimeMillis)
     }
 
-    private fun updateWithDelta(gl10: GL10?, dt: Long) {
-        val xMovement =
-            0.1f * sin(System.currentTimeMillis() * 2 * Math.PI / (2.0f * 1000)).toFloat()
-        val yMovement =
-            -0.2f * sin(System.currentTimeMillis() * 2 * Math.PI / (3.0f * 1000)).toFloat()
+    private fun updateWithDelta(gl10: GL10?, currentTime: Long) {
+        val xMovement = 0.1f * sin(System.currentTimeMillis() * 2 * Math.PI / (2.0f * 1000)).toFloat()
+        val yMovement = 0.2f * sin(System.currentTimeMillis() * 2 * Math.PI / (3.0f * 1000)).toFloat()
+
 
         val viewMatrix = FloatArray(16)
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
@@ -72,9 +68,12 @@ class SceneRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
         camera.translate(xMovement, yMovement, 0f)
         camera.rotate(360.0f * xMovement, 0.0f, 0.0f, 1.0f)
-        //camera.scale(movement, movement, movement)
+        //camera.scale(xMovement, 1f, 1f)
         texture?.camera = camera
-        texture?.draw(gl10, dt)
+        texture?.draw(gl10, currentTime)
+        if(currentTime > 6000){
+            initialTimeMillis = System.currentTimeMillis()
+        }
     }
 
 }

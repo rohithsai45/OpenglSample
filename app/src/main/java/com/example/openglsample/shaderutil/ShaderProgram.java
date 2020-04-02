@@ -155,14 +155,20 @@ public class ShaderProgram {
     }
 
     private int fetchUniformLocation(String name) {
-        int location = uniforms.get(name);
-        if(location == -1) {
-            location = GLES20.glGetUniformLocation(programHandle, name);
-            if(location != -1) {
-                uniforms.put(name, location);
+        // TODO remove this try catch block
+        try{
+            int location = uniforms.get(name);
+            if(location == -1) {
+                location = GLES20.glGetUniformLocation(programHandle, name);
+                if(location != -1) {
+                    uniforms.put(name, location);
+                }
             }
+            return location;
+        } catch (Exception exception){
+            exception.printStackTrace();
         }
-        return location;
+        return -1;
     }
 
 

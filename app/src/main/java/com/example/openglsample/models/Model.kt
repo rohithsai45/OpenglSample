@@ -57,7 +57,7 @@ open class Model(
         setUpTexture()
     }
 
-    fun draw(gl: GL10?, dt: Long) {
+    fun draw(gl: GL10?, currentTime: Long) {
         shader.begin()
         //gl?.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
@@ -67,6 +67,9 @@ open class Model(
         camera.multiply(modelMatrix())
         shader.setUniformMatrix("u_ProjectionMatrix", projection)
         shader.setUniformMatrix("u_ModelViewMatrix", camera)
+        shader.setUniformf("u_time", currentTime.toFloat())
+        //shader.setUniformf("u_resolution", targetWidth.toFloat(), targetHeight.toFloat())
+
         shader.enableVertexAttribute("a_Position")
         shader.setVertexAttribute(
             "a_Position",
@@ -177,10 +180,34 @@ open class Model(
             R.id.channel_title,
             OpenglApplication.instance
         )
-        textureName = TextureUtils.loadTexture(bitmap)
-        bitmap?.recycle()
-        titleWidth = bitmap!!.width
-        titleHeight = bitmap.height
+        textureName = TextureUtils.loadTexture(bitmap).apply {
+            titleWidth = bitmap!!.width
+            titleHeight = bitmap.height
+            bitmap.recycle()
+        }
+        GLES20.glActiveTexture(textureName)
+        val texConstant = GLES20.GL_TEXTURE_2D
+        GLES20.glBindTexture(texConstant, textureName)
+        GLES20.glTexParameterf(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_MIN_FILTER,
+            GLES20.GL_NEAREST.toFloat()
+        )
+        GLES20.glTexParameterf(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_MAG_FILTER,
+            GLES20.GL_LINEAR.toFloat()
+        )
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_WRAP_S,
+            GLES20.GL_CLAMP_TO_EDGE
+        )
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_WRAP_T,
+            GLES20.GL_CLAMP_TO_EDGE
+        )
     }
 
 }
