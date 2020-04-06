@@ -23,6 +23,10 @@ android {
         }
     }
 
+    aaptOptions {
+        noCompress "glsl"
+    }
+
 }
 
 dependencies {

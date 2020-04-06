@@ -33,7 +33,7 @@ open class Model(
     private val indices: ShortArray = indices.copyOfRange(0, indices.size)
     private var vertexBuffer: FloatBuffer? = null
     private var vertexBufferId = 0
-    private var vertexStride = 0
+    private var vertexStride = (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) * SIZE_OF_FLOAT // 4 bytes per vertex
     private var indexBuffer: ShortBuffer? = null
     private var indexBufferId = 0
 
@@ -58,8 +58,10 @@ open class Model(
     }
 
     fun draw(gl: GL10?, currentTime: Long) {
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
+
         shader.begin()
-        //gl?.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureName)
         shader.setUniformi("u_Texture", 1)
@@ -71,6 +73,7 @@ open class Model(
         //shader.setUniformf("u_resolution", targetWidth.toFloat(), targetHeight.toFloat())
 
         shader.enableVertexAttribute("a_Position")
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
         shader.setVertexAttribute(
             "a_Position",
             COORDS_PER_VERTEX,
@@ -89,18 +92,20 @@ open class Model(
             (COORDS_PER_VERTEX + COLORS_PER_VERTEX) * SIZE_OF_FLOAT
         )
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferId)
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexBufferId)
         GLES20.glDrawElements(
             GLES20.GL_TRIANGLES,  // mode
             indices.size,  // count
             GLES20.GL_UNSIGNED_SHORT,  // type
             0
-        ) // offset
+        )
+
         shader.disableVertexAttribute("a_Position")
         shader.disableVertexAttribute("a_TexCoord")
 
         shader.end()
+
+        GLES20.glDisable(GLES20.GL_BLEND)
     }
 
     fun setTargetDimensions(targetWidth: Int, targetHeight: Int) {
@@ -137,8 +142,6 @@ open class Model(
             vertexBuffer,
             GLES20.GL_STATIC_DRAW
         )
-        vertexStride =
-            (COORDS_PER_VERTEX + COLORS_PER_VERTEX + TEXCOORDS_PER_VERTEX) * SIZE_OF_FLOAT // 4 bytes per vertex
     }
 
     private fun updatePositionCoordinates() {

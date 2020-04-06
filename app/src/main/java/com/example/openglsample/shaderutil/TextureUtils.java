@@ -24,7 +24,7 @@ public class TextureUtils {
 
     public static int loadTexture(Bitmap bitmap) {
 
-        int textureName[] = new int[1];
+        int[] textureName = new int[1];
         GLES20.glGenTextures(1, textureName, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureName[0]);
 
